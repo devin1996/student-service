@@ -1,0 +1,13 @@
+{
+    "type": "mysql",
+    "host": "localhost",
+    "username": "root",
+    "password": "root",
+    "database": "student_service_db",
+    "entities":[
+        "src/entity/*.js"
+    ],
+    "logging":false,
+    "synchronize": true
+
+}

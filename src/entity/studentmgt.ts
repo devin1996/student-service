@@ -5,20 +5,19 @@ export class studentmgt {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({default: "name"})
     name: string;
 
-    @Column()
+    @Column({default: "grade"})
     grade: string;
 
-    @Column()
+    @Column({default: "17.1"})
     batchno: string;
 
-
-    @Column()
+    @Column({default: "0000000"})
     indexNo: string;
 
-    @Column()
+    @Column({default: "email@sample.com"})
     email: string;
 
 
