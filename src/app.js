@@ -65,11 +65,12 @@ var amqp = require("amqplib/callback_api");
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, studentRepository.find()
                             //amqlib testing
+                            //channel.sendToQueue('testing123', Buffer.from('Hello from the other Side'))
                         ];
                         case 1:
                             students = _a.sent();
                             //amqlib testing
-                            channel.sendToQueue('testing123', Buffer.from('Hello from the other Side'));
+                            //channel.sendToQueue('testing123', Buffer.from('Hello from the other Side'))
                             res.json(students);
                             return [2 /*return*/];
                     }
@@ -98,6 +99,7 @@ var amqp = require("amqplib/callback_api");
                             return [4 /*yield*/, studentRepository.save(newstudent)];
                         case 2:
                             result = _a.sent();
+                            channel.sendToQueue('student_added', Buffer.from(JSON.stringify(result)));
                             return [2 /*return*/, res.send(result)];
                     }
                 });
@@ -114,6 +116,7 @@ var amqp = require("amqplib/callback_api");
                             return [4 /*yield*/, studentRepository.save(updatestudent)];
                         case 2:
                             result = _a.sent();
+                            channel.sendToQueue('student_updated', Buffer.from(JSON.stringify(result)));
                             return [2 /*return*/, res.send(result)];
                     }
                 });
@@ -126,6 +129,7 @@ var amqp = require("amqplib/callback_api");
                         case 0: return [4 /*yield*/, studentRepository.delete(req.params.id)];
                         case 1:
                             result = _a.sent();
+                            channel.sendToQueue('student_deleted', Buffer.from(req.params.id));
                             return [2 /*return*/, res.send(result)];
                     }
                 });
@@ -138,7 +142,12 @@ var amqp = require("amqplib/callback_api");
                         case 0: return [4 /*yield*/, studentRepository.findOne(req.params.id)];
                         case 1:
                             disablestudent = _a.sent();
-                            disablestudent.isDisabled = true;
+                            if (disablestudent.isDisabled == true) {
+                                disablestudent.isDisabled = false;
+                            }
+                            else {
+                                disablestudent.isDisabled = true;
+                            }
                             return [4 /*yield*/, studentRepository.save(disablestudent)];
                         case 2:
                             result = _a.sent();
@@ -148,6 +157,11 @@ var amqp = require("amqplib/callback_api");
             }); });
             console.log('Listening to post 8000');
             app.listen(8000);
+            //Closing the rabbitmq connection
+            process.on('beforeExit', function () {
+                console.log('closing');
+                connection.close();
+            });
         });
     });
 });

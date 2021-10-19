@@ -33,7 +33,8 @@ createConnection().then(db => {
             app.get('/api/students', async (req: Request, res: Response) => {
                 const students = await studentRepository.find()
                 //amqlib testing
-                channel.sendToQueue('testing123', Buffer.from('Hello from the other Side'))
+                //channel.sendToQueue('testing123', Buffer.from('Hello from the other Side'))
+                
                 res.json(students)
             })
 
@@ -49,6 +50,8 @@ createConnection().then(db => {
                 const newstudent = await studentRepository.create(req.body);
                 const result = await studentRepository.save(newstudent)
 
+                channel.sendToQueue('student_added', Buffer.from(JSON.stringify(result)))
+
                 return res.send(result)
 
             })
@@ -59,6 +62,8 @@ createConnection().then(db => {
                 studentRepository.merge(updatestudent, req.body)
                 const result = await studentRepository.save(updatestudent)
 
+                channel.sendToQueue('student_updated', Buffer.from(JSON.stringify(result)))
+
                 return res.send(result)
 
             })
@@ -67,6 +72,7 @@ createConnection().then(db => {
             app.delete('/api/students/:id', async (req: Request, res: Response) => {
 
                 const result = await studentRepository.delete(req.params.id)
+                channel.sendToQueue('student_deleted', Buffer.from(req.params.id))
                 return res.send(result)
 
             })
@@ -75,7 +81,11 @@ createConnection().then(db => {
             app.post('/api/students/:id/disable', async (req: Request, res: Response) => {
 
                 const disablestudent = await studentRepository.findOne(req.params.id);
-                disablestudent.isDisabled = true
+                if(disablestudent.isDisabled == true){
+                    disablestudent.isDisabled = false
+                }else{
+                    disablestudent.isDisabled = true
+                }
                 const result = await studentRepository.save(disablestudent)
 
                 return res.send(result)
@@ -85,6 +95,11 @@ createConnection().then(db => {
 
             console.log('Listening to post 8000')
             app.listen(8000)
+            //Closing the rabbitmq connection
+            process.on('beforeExit', () => {
+                console.log('closing')
+                connection.close()
+            })
         })
 
     })
