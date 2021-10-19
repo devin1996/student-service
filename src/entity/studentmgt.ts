@@ -21,7 +21,7 @@ export class studentmgt {
     email: string;
 
 
-    @Column()
+    @Column({default: "profile_picture"})
     image: string;
 
     @Column()

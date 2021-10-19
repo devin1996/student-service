@@ -48,7 +48,7 @@ var studentmgt_1 = require("./entity/studentmgt");
         origin: ["http://localhost:3000"]
     }));
     app.use(express.json());
-    //Read all Students
+    //Read all Students as an array
     app.get('/api/students', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
         var students;
         return __generator(this, function (_a) {
@@ -61,6 +61,18 @@ var studentmgt_1 = require("./entity/studentmgt");
             }
         });
     }); });
+    //Retrive a Single user a a single entity
+    app.get('/api/students/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var oneStudent;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, studentRepository.findOne(req.params.id)];
+                case 1:
+                    oneStudent = _a.sent();
+                    return [2 /*return*/, res.json(oneStudent)];
+            }
+        });
+    }); });
     //Create Students
     app.post('/api/students', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
         var newstudent, result;
@@ -70,6 +82,50 @@ var studentmgt_1 = require("./entity/studentmgt");
                 case 1:
                     newstudent = _a.sent();
                     return [4 /*yield*/, studentRepository.save(newstudent)];
+                case 2:
+                    result = _a.sent();
+                    return [2 /*return*/, res.send(result)];
+            }
+        });
+    }); });
+    //update a student
+    app.put('/api/students/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var updatestudent, result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, studentRepository.findOne(req.params.id)];
+                case 1:
+                    updatestudent = _a.sent();
+                    studentRepository.merge(updatestudent, req.body);
+                    return [4 /*yield*/, studentRepository.save(updatestudent)];
+                case 2:
+                    result = _a.sent();
+                    return [2 /*return*/, res.send(result)];
+            }
+        });
+    }); });
+    //delete a student
+    app.delete('/api/students/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, studentRepository.delete(req.params.id)];
+                case 1:
+                    result = _a.sent();
+                    return [2 /*return*/, res.send(result)];
+            }
+        });
+    }); });
+    //Disabling a student
+    app.post('/api/students/:id/disable', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var disablestudent, result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, studentRepository.findOne(req.params.id)];
+                case 1:
+                    disablestudent = _a.sent();
+                    disablestudent.isDisabled = true;
+                    return [4 /*yield*/, studentRepository.save(disablestudent)];
                 case 2:
                     result = _a.sent();
                     return [2 /*return*/, res.send(result)];

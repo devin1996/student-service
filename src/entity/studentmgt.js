@@ -40,7 +40,7 @@ var studentmgt = /** @class */ (function () {
         __metadata("design:type", String)
     ], studentmgt.prototype, "email", void 0);
     __decorate([
-        (0, typeorm_1.Column)(),
+        (0, typeorm_1.Column)({ default: "profile_picture" }),
         __metadata("design:type", String)
     ], studentmgt.prototype, "image", void 0);
     __decorate([
